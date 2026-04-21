@@ -346,8 +346,21 @@ docker ps
 
 ## Postman collection
 
-В репозиторий добавлена коллекция Postman с примерами запросов ко всем реализованным эндпоинтам.
+В проект приложены файлы для проверки API через Postman:
 
+- `docs/postman/task_time_tracker_postman_collection.json`
+- `docs/postman/task_time_tracker_local_environment.json`
+
+Для проверки:
+1. импортируйте оба файла в Postman;
+2. выберите environment `Task Time Tracker Local`;
+3. выполните запросы по порядку:
+    - `Auth - Login`
+    - `Tasks - Create Task`
+    - `Tasks - Get Task By Id`
+    - `Tasks - Update Task Status`
+    - `Time Records - Create`
+    - `Time Records - Get By Employee And Period`
 ## Обработка ошибок
 
 В проекте реализована централизованная обработка ошибок через `@RestControllerAdvice`.

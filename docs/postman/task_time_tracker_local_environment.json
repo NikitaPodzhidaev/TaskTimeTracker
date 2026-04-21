@@ -1,0 +1,33 @@
+{
+  "id": "8f2441d4-65e4-4ae1-8a4a-ttt-env",
+  "name": "Task Time Tracker Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "taskId",
+      "value": "1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "employeeId",
+      "value": "101",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-04-22T00:00:00.000Z",
+  "_postman_exported_using": "ChatGPT"
+}

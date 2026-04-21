@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="ru.testcdek.timetracker.mapper.TaskMapper">
+<mapper namespace="ru.testcdek.tasktimetracker.mapper.TaskMapper">
 
-    <resultMap id="taskResultMap" type="ru.testcdek.timetracker.model.Task">
+    <resultMap id="taskResultMap" type="ru.testcdek.tasktimetracker.model.Task">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
         <result property="description" column="description"/>
@@ -13,7 +13,7 @@
     </resultMap>
 
     <insert id="insertTask"
-            parameterType="ru.testcdek.timetracker.model.Task"
+            parameterType="ru.testcdek.tasktimetracker.model.Task"
             useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO tasks (title, description, status)

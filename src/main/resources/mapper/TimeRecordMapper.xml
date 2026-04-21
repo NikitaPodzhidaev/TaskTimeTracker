@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="ru.testcdek.timetracker.mapper.TimeRecordMapper">
+<mapper namespace="ru.testcdek.tasktimetracker.mapper.TimeRecordMapper">
 
-    <resultMap id="timeRecordResultMap" type="ru.testcdek.timetracker.model.TimeRecord">
+    <resultMap id="timeRecordResultMap" type="ru.testcdek.tasktimetracker.model.TimeRecord">
         <id property="id" column="id"/>
         <result property="employeeId" column="employee_id"/>
         <result property="taskId" column="task_id"/>
@@ -15,7 +15,7 @@
     </resultMap>
 
     <insert id="insertTimeRecord"
-            parameterType="ru.testcdek.timetracker.model.TimeRecord"
+            parameterType="ru.testcdek.tasktimetracker.model.TimeRecord"
             useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO time_records (
@@ -45,7 +45,7 @@
         FROM time_records
         WHERE employee_id = #{employeeId}
         AND start_time >= #{startTime}
-        AND end_time <= #{endTime}
+        AND end_time &lt;= #{endTime}
         ORDER BY start_time
     </select>
 

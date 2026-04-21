@@ -1,12 +1,17 @@
 package ru.testcdek.tasktimetracker.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,74 +20,123 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleTaskNotFound(TaskNotFoundException exception){
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "not found");
-        body.put("message", exception.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    public ResponseEntity<ErrorResponse> handleTaskNotFound(TaskNotFoundException exception) {
+        return buildError(
+                HttpStatus.NOT_FOUND,
+                "not found",
+                exception.getMessage()
+        );
     }
 
     @ExceptionHandler(InvalidTimeRecordException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidTimeRecord(InvalidTimeRecordException exception){
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "bad request");
-        body.put("message", exception.getMessage());
-
-        return ResponseEntity.badRequest().body(body);
+    public ResponseEntity<ErrorResponse> handleInvalidTimeRecord(InvalidTimeRecordException exception) {
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "bad request",
+                exception.getMessage()
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException exception){
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "validation failed");
-
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
         exception.getBindingResult()
                 .getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        body.put("messages", errors);
 
-        return ResponseEntity.badRequest().body(body);
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "validation failed",
+                "validation error",
+                errors
+        );
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, Object>> handleBadJson(HttpMessageNotReadableException exception){
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "bad request");
-        body.put("message", "invalid body or enum value");
-        return ResponseEntity.badRequest().body(body);
+    public ResponseEntity<ErrorResponse> handleBadJson(HttpMessageNotReadableException exception) {
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "bad request",
+                "invalid request body or enum value"
+        );
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleCommonException(Exception exception) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("error", "internal server error");
-        body.put("message", exception.getMessage());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "bad request",
+                "invalid request parameter type"
+        );
+    }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRequestParam(MissingServletRequestParameterException exception) {
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "bad request",
+                "missing required request parameter: " + exception.getParameterName()
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "bad request",
+                exception.getMessage()
+        );
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Map<String, Object>> handleAuthException(Exception exception){
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        body.put("error", "unauthorized");
-        body.put("message", "invalid username or password");
+    public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException exception) {
+        return buildError(
+                HttpStatus.UNAUTHORIZED,
+                "unauthorized",
+                "invalid username or password"
+        );
+    }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException exception) {
+        return buildError(
+                HttpStatus.FORBIDDEN,
+                "forbidden",
+                "access denied"
+        );
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException exception) {
+        return buildError(
+                HttpStatus.NOT_FOUND,
+                "not found",
+                "resource not found"
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleCommonException(Exception exception) {
+        return buildError(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "internal server error",
+                exception.getMessage()
+        );
+    }
+
+    private ResponseEntity<ErrorResponse> buildError(HttpStatus status, String error, String message) {
+        return buildError(status, error, message, null);
+    }
+
+    private ResponseEntity<ErrorResponse> buildError(HttpStatus status, String error, String message, Object details) {
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                status.value(),
+                error,
+                message,
+                details
+        );
+        return ResponseEntity.status(status).body(response);
     }
 }

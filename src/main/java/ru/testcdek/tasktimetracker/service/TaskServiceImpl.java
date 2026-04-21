@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.testcdek.tasktimetracker.dto.request.CreateTaskRequest;
 import ru.testcdek.tasktimetracker.dto.request.UpdateTaskStatusRequest;
 import ru.testcdek.tasktimetracker.dto.response.TaskResponse;
+import ru.testcdek.tasktimetracker.exception.TaskNotFoundException;
 import ru.testcdek.tasktimetracker.mapper.TaskMapper;
 import ru.testcdek.tasktimetracker.model.Task;
 import ru.testcdek.tasktimetracker.model.TaskStatus;
@@ -31,14 +32,14 @@ public class TaskServiceImpl implements TaskService{
     @Override
     public TaskResponse getTaskById(Long id) {
         Task task = taskMapper.findTaskById(id);
-        Objects.requireNonNull(task, "Task wasn't found with this id");
+        if(task == null) throw new TaskNotFoundException(id);
         return mapToTaskResponse(task);
     }
 
     @Override
     public TaskResponse updateTaskStatus(Long id, UpdateTaskStatusRequest request) {
         Task existingTask = taskMapper.findTaskById(id);
-        Objects.requireNonNull(existingTask, "Task wasn't found with this id");
+        if(existingTask == null) throw new TaskNotFoundException(id);
         taskMapper.updateTaskStatus(id, request.taskStatus());
 
         Task updatedTask = taskMapper.findTaskById(id);

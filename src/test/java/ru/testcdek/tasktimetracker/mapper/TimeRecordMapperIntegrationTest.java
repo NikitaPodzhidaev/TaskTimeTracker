@@ -3,6 +3,7 @@ package ru.testcdek.tasktimetracker.mapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.testcdek.tasktimetracker.model.Task;
 import ru.testcdek.tasktimetracker.model.TaskStatus;
 import ru.testcdek.tasktimetracker.model.TimeRecord;
@@ -14,6 +15,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+
 class TimeRecordMapperIntegrationTest extends AbstractPostgresContainerTest {
 
     @Autowired

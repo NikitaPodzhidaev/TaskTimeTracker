@@ -276,7 +276,7 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/NikitaPodzhidaev/TaskTimeTracker.git
 cd tasktimetracker
 ```
 

@@ -10,8 +10,6 @@ import ru.testcdek.tasktimetracker.mapper.TaskMapper;
 import ru.testcdek.tasktimetracker.model.Task;
 import ru.testcdek.tasktimetracker.model.TaskStatus;
 
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService{
@@ -23,7 +21,7 @@ public class TaskServiceImpl implements TaskService{
         Task task = Task.builder()
                 .title(request.title())
                 .description(request.description())
-                .taskStatus(TaskStatus.NEW)
+                .status(TaskStatus.NEW)
                 .build();
         taskMapper.insertTask(task);
         return mapToTaskResponse(task);
@@ -40,7 +38,7 @@ public class TaskServiceImpl implements TaskService{
     public TaskResponse updateTaskStatus(Long id, UpdateTaskStatusRequest request) {
         Task existingTask = taskMapper.findTaskById(id);
         if(existingTask == null) throw new TaskNotFoundException(id);
-        taskMapper.updateTaskStatus(id, request.taskStatus());
+        taskMapper.updateTaskStatus(id, request.status());
 
         Task updatedTask = taskMapper.findTaskById(id);
         return mapToTaskResponse(updatedTask);
@@ -51,7 +49,7 @@ public class TaskServiceImpl implements TaskService{
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                task.getTaskStatus()
+                task.getStatus()
         );
     }
 }

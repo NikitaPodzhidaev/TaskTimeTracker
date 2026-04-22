@@ -280,6 +280,13 @@ git clone https://github.com/NikitaPodzhidaev/TaskTimeTracker.git
 cd tasktimetracker
 ```
 
+### 1.1 Поднять базу данных
+Учесть, что базу данных PostgreSql нужно поднять через Docker
+База создается на порту 5432, если тот занят, то занимается порт 5433
+```bash
+docker compose up -d
+```
+
 ### 2. Сборка проекта
 
 ```bash
